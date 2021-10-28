@@ -19,7 +19,6 @@ git clone git@github.com:fengwk/my-ranger-config.git ~/.config/ranger
 - 代码高亮：`yay -S highlight`
 - 压缩包预览：`yay -S atool`
 - PDF预览：`yay -S poppler`
-- 多媒体文件预览：`yay -S mediainfo`
 - 使用`ctrl+f`进行fzf搜索：`yay -S fzf`
 
 # Reference

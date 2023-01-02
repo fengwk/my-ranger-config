@@ -20,6 +20,8 @@ git clone git@github.com:fengwk/my-ranger-config.git ~/.config/ranger
 - 压缩包预览：`yay -S atool`
 - PDF预览：`yay -S poppler`
 - 使用`ctrl+f`进行fzf搜索：`yay -S fzf`
+- 拖拽`curl+d`：`yay -S dragon-drop`
+- udisk menu：`yay -S udisk2`
 
 # Reference
 

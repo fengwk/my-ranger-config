@@ -148,3 +148,5 @@ class compress(Command):
 
         extension = ['.zip', '.tar.gz', '.rar', '.7z']
         return ['compress ' + os.path.basename(self.fm.thisdir.path) + ext for ext in extension]
+
+from plugins.ranger_udisk_menu.mounter import mount

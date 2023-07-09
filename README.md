@@ -14,7 +14,7 @@ git clone git@github.com:fengwk/my-ranger-config.git ~/.config/ranger
 特性
 
 - 图标
-- 图片预览：`yay -S ueberzug`
+- 图片预览：`yay -S ueberzugpp`
 - 视频缩略图预览：`yay -S ffmpegthumbnailer`
 - 代码高亮：`yay -S highlight`
 - 压缩包预览：`yay -S atool`

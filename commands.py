@@ -8,6 +8,12 @@
 # -----------------------------------------------------------------------------
 
 from __future__ import (absolute_import, division, print_function)
+# Mount and unmount partitions
+from plugins.ranger_udisk_menu.mounter import mount
+from ranger.ext.get_executables import get_executables
+from ranger.container.file import File
+import subprocess
+from ranger.core.loader import CommandLoader
 
 # You can import any python module as needed.
 import os
@@ -17,6 +23,8 @@ from ranger.api.commands import Command
 
 # Any class that is a subclass of "Command" will be integrated into ranger as a
 # command.  Try typing ":my_edit<ENTER>" in ranger!
+
+
 class my_edit(Command):
     # The so-called doc-string of the class will be visible in the built-in
     # help that is accessible by typing "?c" inside ranger.
@@ -61,6 +69,8 @@ class my_edit(Command):
         return self._tab_directory_content()
 
 # fzf
+
+
 class fzf_select(Command):
     """
     :fzf_select
@@ -88,14 +98,16 @@ class fzf_select(Command):
         show_hidden = self.arg(1) == "true"
 
         if fd is not None:
-            hidden = ('--hidden' if show_hidden or self.fm.settings.show_hidden else '')
+            hidden = (
+                '--hidden' if show_hidden or self.fm.settings.show_hidden else '')
             exclude = "--no-ignore-vcs --exclude '.git' --exclude '*.py[co]' --exclude '__pycache__'"
             only_directories = ('--type directory' if self.quantifier else '')
             fzf_default_command = '{} --follow {} {} {} --color=always'.format(
                 fd, hidden, exclude, only_directories
             )
         else:
-            hidden = ('-false' if show_hidden or self.fm.settings.show_hidden else r"-path '*/\.*' -prune")
+            hidden = (
+                '-false' if show_hidden or self.fm.settings.show_hidden else r"-path '*/\.*' -prune")
             exclude = r"\( -name '\.git' -o -iname '\.*py[co]' -o -fstype 'dev' -o -fstype 'proc' \) -prune"
             only_directories = ('-type d' if self.quantifier else '')
             fzf_default_command = 'find -L . -mindepth 1 {} -o {} -o {} -print | cut -b3-'.format(
@@ -123,33 +135,34 @@ class fzf_select(Command):
             else:
                 self.fm.select_file(selected)
 
+
 class extract(Command):
     """:extract <paths>
-    
+
     Extract archives using 7z
     """
+
     def execute(self):
         import os
-        fail=[]
+        fail = []
         for i in self.fm.thistab.get_selection():
-            ExtractProg='7z x'
+            ExtractProg = '7z x'
             if i.path.endswith('.zip'):
                 # zip encoding issue
-                ExtractProg='unzip -O gbk'
+                ExtractProg = 'unzip -O gbk'
             elif i.path.endswith('.tar.gz'):
-                ExtractProg='tar xvf'
+                ExtractProg = 'tar xvf'
             elif i.path.endswith('.tar.xz'):
-                ExtractProg='tar xJvf'
+                ExtractProg = 'tar xJvf'
             elif i.path.endswith('.tar.bz2'):
-                ExtractProg='tar xjvf'
+                ExtractProg = 'tar xjvf'
             if os.system('{0} "{1}"'.format(ExtractProg, i.path)):
                 fail.append(i.path)
         if len(fail) > 0:
-            self.fm.notify("Fail to extract: {0}".format(' '.join(fail)), duration=10, bad=True)
+            self.fm.notify("Fail to extract: {0}".format(
+                ' '.join(fail)), duration=10, bad=True)
         self.fm.redraw_window()
 
-import os
-from ranger.core.loader import CommandLoader
 
 class compress(Command):
     def execute(self):
@@ -169,8 +182,8 @@ class compress(Command):
         au_flags = parts[1:]
 
         descr = "compressing files in: " + os.path.basename(parts[1])
-        obj = CommandLoader(args=['apack'] + au_flags + \
-                [os.path.relpath(f.path, cwd.path) for f in marked_files], descr=descr)
+        obj = CommandLoader(args=['apack'] + au_flags +
+                            [os.path.relpath(f.path, cwd.path) for f in marked_files], descr=descr)
 
         obj.signal_bind('after', refresh)
         self.fm.loader.add(obj)
@@ -181,4 +194,42 @@ class compress(Command):
         extension = ['.zip', '.tar.gz', '.rar', '.7z']
         return ['compress ' + os.path.basename(self.fm.thisdir.path) + ext for ext in extension]
 
-from plugins.ranger_udisk_menu.mounter import mount
+
+class YankContent(Command):
+    """
+    Copy the content of image file and text file with xclip
+    """
+
+    def execute(self):
+        if 'xclip' not in get_executables():
+            self.fm.notify('xclip is not found.', bad=True)
+            return
+
+        arg = self.rest(1)
+        if arg:
+            if not os.path.isfile(arg):
+                self.fm.notify('{} is not a file.'.format(arg))
+                return
+            file = File(arg)
+        else:
+            file = self.fm.thisfile
+            if not file.is_file:
+                self.fm.notify('{} is not a file.'.format(file.relative_path))
+                return
+
+        relative_path = file.relative_path
+        cmd = ['xclip', '-selection', 'clipboard']
+        if not file.is_binary():
+            with open(file.path, 'rb') as fd:
+                subprocess.check_call(cmd, stdin=fd)
+        elif file.image:
+            cmd += ['-t', file.mimetype, file.path]
+            subprocess.check_call(cmd)
+            self.fm.notify(
+                'Content of {} is copied to x clipboard'.format(relative_path))
+        else:
+            self.fm.notify(
+                '{} is not an image file or a text file.'.format(relative_path))
+
+    def tab(self, tabnum):
+        return self._tab_directory_content()

@@ -26,7 +26,10 @@ git clone git@github.com:fengwk/my-ranger-config.git ~/.config/ranger
 macos
 
 - brew install jstkdng/programs/ueberzugpp
-- dragon-drop 暂无替代方案
+- dragon-drop 使用`https://github.com/ciaran/drag.git`
+    - 编译方法: `cd dragterm && clang -o dragterm main.m DTDraggingSourceView.m -framework Foundation -framework AppKit`
+    - 编译完成后将编译生成的`dragterm`放在可执行位置
+    - 将适配器脚本脚本也放到可执行位置`ln -s ~/scripts/dragon-drop-mac /usr/local/bin/dragon-drop`
 - udisk2 暂无替代方案
 
 # Reference

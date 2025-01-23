@@ -23,6 +23,12 @@ git clone git@github.com:fengwk/my-ranger-config.git ~/.config/ranger
 - 拖拽`curl+d`：`yay -S dragon-drop`
 - udisk menu：`yay -S udisk2`
 
+macos
+
+- brew install jstkdng/programs/ueberzugpp
+- dragon-drop 暂无替代方案
+- udisk2 暂无替代方案
+
 # Reference
 
 - [ranger配置和使用](https://www.zssnp.top/2021/06/03/ranger/)

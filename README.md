@@ -23,6 +23,15 @@ git clone git@github.com:fengwk/my-ranger-config.git ~/.config/ranger
 - 拖拽`curl+d`：`yay -S dragon-drop`
 - udisk menu：`yay -S udisk2`
 
+ubuntu
+
+```
+apt install ffmpegthumbnailer highlight atool poppler-utils fzf fd-find udisks2
+```
+
+- ueberzugpp-new https://github.com/jstkdng/ueberzugpp-new
+- dragon https://github.com/mwh/dragon
+
 macos
 
 - brew install jstkdng/programs/ueberzugpp

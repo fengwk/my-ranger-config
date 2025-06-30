@@ -290,7 +290,9 @@ handle_mime() {
             exit 1;;
 
         ## Text
-        text/* | */xml)
+        # 可以使用下面命令检查类型并添加
+        # file --dereference --brief --mime-type $file
+        text/* | */xml | application/javascript | application/json)
             ## Syntax highlight
             if [[ "$( stat --printf='%s' -- "${FILE_PATH}" )" -gt "${HIGHLIGHT_SIZE_MAX}" ]]; then
                 exit 2
@@ -334,6 +336,14 @@ handle_mime() {
 }
 
 handle_fallback() {
+    # 降级的情况优如果是文本优先尝试输出文本内容
+    if [ -n "$(file --dereference --brief -- "${FILE_PATH}" | grep -o text)" ]; then
+        text="$(head 5000 ${FILE_PATH})"
+        if [ -n "$text" ]; then
+            echo "$text" && exit 5
+        fi
+    fi
+    # 非文本或空内容的情况输出文件类型
     echo '----- File Type Classification -----' && file --dereference --brief -- "${FILE_PATH}" && exit 5
     exit 1
 }
